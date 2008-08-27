@@ -1,6 +1,5 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mycompany.app</groupId>
     <artifactId>scalanet</artifactId>
@@ -8,6 +7,30 @@
     <version>1.0-SNAPSHOT</version>
     <name>scalanet</name>
     <url>http://maven.apache.org</url>
+
+    <properties>
+        <scala.version>2.7.1</scala.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest</artifactId>
+                <version>0.9.3</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <repositories>
         <repository>
@@ -45,10 +68,9 @@
                         <jvmArg>-Xmx1024m</jvmArg>
                     </jvmArgs>
                     <args>
-            <!--arg>-unchecked</arg-->
                         <arg>-deprecation</arg>
                     </args>
-                    <scalaVersion>2.7.1</scalaVersion>
+                    <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
             </plugin>
             <plugin>
@@ -73,20 +95,18 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.7.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest</artifactId>
-            <version>0.9.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
