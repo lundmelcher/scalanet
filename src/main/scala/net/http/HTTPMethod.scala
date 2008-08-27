@@ -1,6 +1,6 @@
 package net.http
 
-abstract class HTTPMethod private[net](private[net] val domain: String, private val p: String, private[net] val port: Int) {
+abstract class HTTPMethod private[net](private[net] val domain: String, private val p: String, private[net] val port: Int) extends NetPackage {
 
   private val pathRegex = """/?(.*)""".r
   

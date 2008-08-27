@@ -3,7 +3,9 @@ package net.http
 import java.net._
 import java.io._
 
-object HTTP {
+object HTTP extends NetPrimitives {
+  
+  type P = HTTPMethod
 
   def req(x: HTTPMethod): Response = req(x, (resp: Response) => resp)
   

@@ -1,6 +1,6 @@
 package net.http
 
-class Response private[net](val stringList: List[String]) extends Seq[String] with ListToString with Sequify{
+class Response private[net](val stringList: List[String]) extends ListToString with NetResponse{
 
   def getBody: Body = new Body(parse()_2)
   
@@ -16,10 +16,10 @@ class Response private[net](val stringList: List[String]) extends Seq[String] wi
       })
   }
     
-  class Body(val stringList: List[String]) extends Seq[String] with ListToString with Sequify {
+  class Body(val stringList: List[String]) extends ListToString with NetBody {
   }
   
-  class Header(val stringList: List[String]) extends Seq[String] with ListToString with Sequify{
+  class Header(val stringList: List[String]) extends ListToString with NetHeader {
     assume(!stringList.isEmpty)
     
     val statusLine = stringList(0)
