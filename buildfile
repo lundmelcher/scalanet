@@ -14,6 +14,7 @@ define 'scalanet' do
   package :jar, :id => 'scalanet'
 
   test.include 'net.*'
+  test.include 'net.http.*'
 
   
 end
