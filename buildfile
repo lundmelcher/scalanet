@@ -9,5 +9,12 @@ define 'scalanet' do
   project.group = 'com.mycompany.app'
   project.version = '1.0-SNAPSHOT'
   compile.with 'org.scala-lang:scala-library:jar:2.7.1'
+  compile.with 'junit:junit:jar:4.4'
+
   package :jar, :id => 'scalanet'
+
+  test.include 'net.*'
+
+  
 end
+
