@@ -1,4 +1,4 @@
-package scala.net
+package net.http
 
 //import org.scalatest.Suite
 import org.junit.Test
