@@ -16,6 +16,5 @@ class NetTest extends Suite {
     assert(diff - 2 === 1)
   }
 
-
 }
 
