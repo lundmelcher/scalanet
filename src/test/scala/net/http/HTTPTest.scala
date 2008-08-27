@@ -2,7 +2,6 @@ package net.http
 
 //import org.scalatest.Suite
 import org.junit.Test
-import _root_.net.http._
 
 class HTTPTest {
   
