@@ -1,5 +1,5 @@
 * Velge unit test rammeverk
 * Unit test poc
 * Public interfaces
-* Rydde opp i tester, forelÃ¸pig ingen unit tester, bare tullball.
+* Rydde opp i tester, foreløpig ingen unit tester, bare tullball.
 ...
