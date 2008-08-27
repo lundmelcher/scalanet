@@ -1,4 +1,4 @@
-package net
+package net.http
 
 class Response private[net](val stringList: List[String]) extends Seq[String] with ListToString with Sequify{
 

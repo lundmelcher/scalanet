@@ -1,4 +1,4 @@
-package net
+package net.http
 
 abstract class HTTPMethod private[net](private[net] val domain: String, private val p: String, private[net] val port: Int) {
 

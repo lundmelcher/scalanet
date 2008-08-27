@@ -1,4 +1,4 @@
-package net
+package net.http
 
 import java.net._
 import java.io._

@@ -1,6 +1,6 @@
 package net.test
 
-import _root_.net._
+import _root_.net.http._
 
 object Testing {
   def main(args : Array[String]) : Unit = {
