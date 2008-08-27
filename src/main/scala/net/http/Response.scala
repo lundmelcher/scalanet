@@ -39,7 +39,7 @@ class Response private[net](val stringList: List[String]) extends Seq[String] wi
   private def setupMap(remaining: List[(String, String)]): Map[String, List[String]] = {
     //val m = collection.mutable.Map.empty[String,List[String]] 
     var m = Map.empty[String, List[String]]
-    for((field, value) <- remaining) {
+    for ((field, value) <- remaining) {
       m = m.get(field) match {
         case Some(values) => m + (field -> (value :: values))
         case None => m + (field -> List(value))
