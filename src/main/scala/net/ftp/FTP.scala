@@ -3,9 +3,16 @@ package net.ftp
 import java.net._
 import java.io._
 
-object FTP extends NetPrimitives {
+object FTP extends NetPrimitives[FTPMethod, FTPResponse] {
 
-  type P = FTPMethod
+  type Prot = FTP
+  
+  def buildReq(pkg: FTPMethod): Nothing = error("not implemented")
+
+  def buildResp(stringList: List[String]): Nothing = error("not implemented")
+  
+  protected def getProtocol(s: Socket): FTP = new FTP(s)
+  
   
   val replyPattern = """(\d+) (.*)""".r
   
@@ -25,7 +32,7 @@ object FTP extends NetPrimitives {
     in.readLine match {
       case replyPattern(code, msg) => {
         println(code + " " + msg)
-        if (expected == code) Some(msg) else None
+        if (expected == code.toInt) Some(msg) else None
       }	
       case _ => None
     }
@@ -41,5 +48,13 @@ object FTP extends NetPrimitives {
                                                     }
       case _ => error("Not a valid url pattern")
     }
+  }
+  
+}
+
+class FTP(s: Socket) extends Protocol[FTPMethod, FTPResponse](s){
+  
+  override def send(p: FTPMethod): Nothing = {
+    error("Not implemented")
   }
 }

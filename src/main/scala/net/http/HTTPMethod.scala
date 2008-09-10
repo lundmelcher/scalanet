@@ -1,6 +1,6 @@
 package net.http
 
-abstract class HTTPMethod private[net](private[net] val domain: String, private val p: String, private[net] val port: Int) extends NetPackage {
+abstract class HTTPMethod private[net](private val host: String, private val p: String) extends NetPackage {
 
   private val pathRegex = """/?(.*)""".r
   
@@ -14,10 +14,9 @@ abstract class HTTPMethod private[net](private[net] val domain: String, private 
   override def toString = {
           """<method> <path> HTTP/1.1
              |Host: <host>
-             |Connection: close
              |
              |""".stripMargin.replaceFirst("<method>", method)
-                             .replaceFirst("<host>", domain)
+                             .replaceFirst("<host>", host)
                              .replaceFirst("<path>", path)
   }
   
@@ -26,28 +25,22 @@ object HTTPMethod {
   val defaultPort = 80
 }
 
-class GET(domain: String, path: String, port: Int) extends HTTPMethod(domain, path, port) {
+class GET(path: String, host: String) extends HTTPMethod(path, host) {
   val method = "GET"
 }
 
 object GET {
-  def apply(domain: String, path: String, port: Int) = new GET(domain, path, port)
-  def apply(domain: String, path: String) = new GET(domain, path, HTTPMethod.defaultPort)
-  def apply(domain: String) = new GET(domain, null, HTTPMethod.defaultPort)
-  def apply(domain: String, port: Int) = new GET(domain, null, port)
+  def apply(path: String, host: String) = new GET(path, host)
 }
 
-class HEAD(domain: String, path: String, port: Int) extends HTTPMethod(domain, path, port) {
+class HEAD(host: String, path: String) extends HTTPMethod(host, path) {
   val method = "HEAD"
 }
 
 object HEAD {
-  def apply(domain: String, path: String, port: Int) = new HEAD(domain, path, port)
-  def apply(domain: String, path: String) = new HEAD(domain, path, HTTPMethod.defaultPort)
-  def apply(domain: String, port: Int) = new HEAD(domain, null, port)
-  def apply(domain: String) = new HEAD(domain, null, HTTPMethod.defaultPort)
+  def apply(host: String, path: String) = new HEAD(host, path)
 }
 
-class POST(domain: String, path: String, port: Int) extends HTTPMethod(domain, path, port) {
+class POST(host: String, path: String) extends HTTPMethod(host, path) {
   val method = "POST"
 }

@@ -1,10 +1,11 @@
 package net.ftp
 
-abstract class FTPMethod(val host: String, val port: Int, path: String) extends NetPrimitives {
+abstract class FTPMethod(val host: String, val port: Int, path: String) extends NetPackage {
+  
   
 }
 
-object FTPMethod {
+object FTPMethod extends NetPackage {
   val defaultPort = 21
 }
 
