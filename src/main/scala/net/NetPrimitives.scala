@@ -10,9 +10,7 @@ package net
 import java.net._
 import java.io._
 
-trait NetPrimitives[P, R] {
-  
-  type Prot <: Protocol[P, R]
+trait NetPrimitives[P, R, Prot <: Protocol[P, R]] {
   
   def -> (url: String): R
 

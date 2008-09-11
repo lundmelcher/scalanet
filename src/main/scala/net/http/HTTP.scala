@@ -3,7 +3,7 @@ package net.http
 import java.net._
 import java.io._
 
-object HTTP extends NetPrimitives[HTTPMethod, Response] {
+object HTTP extends NetPrimitives[HTTPMethod, Response, HTTP] {
   
   type Prot = HTTP
   

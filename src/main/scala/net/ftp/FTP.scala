@@ -3,10 +3,8 @@ package net.ftp
 import java.net._
 import java.io._
 
-object FTP extends NetPrimitives[FTPMethod, FTPResponse] {
+object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
 
-  type Prot = FTP
-  
   def buildReq(pkg: FTPMethod): Nothing = error("not implemented")
 
   def buildResp(stringList: List[String]): Nothing = error("not implemented")
