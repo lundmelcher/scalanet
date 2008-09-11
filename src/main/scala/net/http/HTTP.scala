@@ -33,7 +33,7 @@ object HTTP extends NetPrimitives[HTTPMethod, Response, HTTP] {
   
 }
 
-class HTTP(host: String, s: Socket) extends Protocol[HTTPMethod, Response](host, s) {
+class HTTP(host: String, s: Socket) extends Protocol[HTTPMethod, Response] {
   
   def get: Response = {
     get("/")

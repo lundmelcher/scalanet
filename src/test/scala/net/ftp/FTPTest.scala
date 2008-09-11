@@ -1,7 +1,14 @@
 package net.ftp
 
-class FTPTest {
+import org.scalatest.Suite
 
-  FTP.start(
+class FTPTest extends Suite {
+
+  def testCurrentDir {
+    FTP.start("ftp.ifi.uio.no", "anonymous", "fredriv@ifi.uio.no", ftp => {
+      println("Current directory: " + ftp.getCurrentDirectory)
+      println(ftp.get("/welcome.msg"))
+    })
+  }
   
 }
