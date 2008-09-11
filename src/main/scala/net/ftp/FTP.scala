@@ -11,7 +11,7 @@ object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
   
   protected def getProtocol(host: String, s: Socket): FTP = new FTP(host, s)
   
-  protected def defaultPort = 21
+  def defaultPort = 21
 
   val replyPattern = """(\d+) (.*)""".r
   

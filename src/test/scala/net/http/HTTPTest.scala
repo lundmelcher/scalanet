@@ -5,9 +5,10 @@ import org.scalatest.Suite
 class HTTPTest extends Suite {
 
   def testGet {
+    val url = "index.php"
     HTTP.start("www.knowit.no", http => {
-      println(http.get("index.html"))
-      http.get("index.php")
+      http.get("index.html")
+      http.get(url)
       http.get("knowit/Jobb")
     })
     true
