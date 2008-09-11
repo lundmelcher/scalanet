@@ -50,9 +50,40 @@ object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
   
 }
 
-class FTP(s: Socket) extends Protocol[FTPMethod, FTPResponse](s){
+class FTP(s: Socket) extends Protocol[FTPMethod, FTPResponse](s) {
   
-  override def send(p: FTPMethod): Nothing = {
+  val replyPattern = """(\d+) (.*)""".r
+  
+  def login(username: String, password: String) {
+    sendExpect("USER " + username, 331)
+    sendExpect("PASS " + password, 230)
+  }
+  
+  def getCurrentDirectory() : String = {
+    val pathPattern = """\"([^\"]*)\".*""".r
+
+    val msg = sendExpect("PWD", 257)
+    msg match {
+      case pathPattern(path) => path
+      case _ => error("Wrong path format")
+    }
+  }
+  
+  def sendExpect(msg: String, code: Int) : String = {
+    val out = new PrintWriter(new OutputStreamWriter(s.getOutputStream))
+    val in = new BufferedReader(new InputStreamReader(s.getInputStream))
+    
+    println("-> " + msg)
+    out write msg
+    val resp = in.readLine
+    println("<- " + resp)
+    resp match {
+      case replyPattern(code, msg) => msg
+      case _ => error("Unexpected response")
+    }
+  }
+  
+  def send(p: FTPMethod): Nothing = {
     error("Not implemented")
   }
 }
