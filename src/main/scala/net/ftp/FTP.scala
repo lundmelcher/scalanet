@@ -51,7 +51,7 @@ object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
   
 }
 
-class FTP(host: String, s: Socket) extends Protocol[FTPMethod, FTPResponse](host, s){
+class FTP(host: String, s: Socket) extends Protocol[FTPMethod, FTPResponse]{
 
   
   
