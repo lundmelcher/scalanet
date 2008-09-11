@@ -3,3 +3,10 @@
 * Public interfaces
 * Rydde opp i tester, foreløpig ingen unit tester, bare tullball.
 ...
+
+
+HTTP: 
+* Skjule GET/POST/OSV fra klient kode.
+* Lage tilsvarende start metode uten port.
+* Finne ut hvorfor connection keepalive gaar treigt.
+* Bedre navngivning.
