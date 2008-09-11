@@ -18,7 +18,7 @@ trait NetPrimitives[Command, Response, Prot <: Protocol[Command, Response]] {
 
   def buildResp(stringList: List[String]): Response
   
-  protected def getProtocol(s: Socket): Prot
+  protected def getProtocol(host: String, s: Socket): Prot
   
   final def req(pkg: Command, host: String, port: Int): Response = {
     start(host, port, prot => {
@@ -29,11 +29,15 @@ trait NetPrimitives[Command, Response, Prot <: Protocol[Command, Response]] {
 	 out write buildReq(pkg)
      buildResp(readInput(in))
   }
+
+  protected def defaultPort: Int
+  
+  def start(host: String, handler: Prot => Response): Response = start(host, defaultPort, handler)
   
   def start(host: String, port: Int, handler: Prot => Response) = {
         val s = new Socket(host, port)
    	  try {
-	    handler(getProtocol(s))
+	    handler(getProtocol(host, s))
 	  }
 	  finally {
 	    s close()
@@ -56,10 +60,4 @@ trait NetPrimitives[Command, Response, Prot <: Protocol[Command, Response]] {
       }
     }
    
-}
-
-abstract class Protocol[Command, Response](s: Socket) {
-  
-  def send(p: Command): Response
-  
 }

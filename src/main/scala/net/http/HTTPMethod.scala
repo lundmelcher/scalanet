@@ -21,9 +21,6 @@ abstract class HTTPMethod private[net](private val host: String, private val p: 
   }
   
 }
-object HTTPMethod {
-  val defaultPort = 80
-}
 
 class GET(path: String, host: String) extends HTTPMethod(path, host) {
   val method = "GET"
