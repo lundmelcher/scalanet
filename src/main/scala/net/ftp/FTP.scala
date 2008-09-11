@@ -7,7 +7,7 @@ object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
 
   def buildReq(pkg: FTPMethod): Nothing = error("not implemented")
 
-  def buildResp(stringList: List[String]): Nothing = error("not implemented")
+  def buildResp(input: BufferedInputStream): Nothing = error("not implemented")
   
   protected def getProtocol(host: String, s: Socket): FTP = new FTP(host, s)
   
@@ -48,7 +48,7 @@ object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
       case _ => error("Not a valid url pattern")
     }
   }
-  
+
 }
 
 class FTP(host: String, s: Socket) extends Protocol[FTPMethod, FTPResponse]{

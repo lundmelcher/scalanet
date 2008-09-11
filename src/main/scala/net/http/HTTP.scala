@@ -3,14 +3,14 @@ package net.http
 import java.net._
 import java.io._
 
-object HTTP extends NetPrimitives[HTTPMethod, Response, HTTP] {
+object HTTP extends NetPrimitives[HTTPMethod, HTTPResponse, HTTP] {
   
   def buildReq(x: HTTPMethod): String = {
     x toString
   }
 
-  def buildResp(stringList: List[String]): Response = {
-    new Response(stringList)
+  def buildResp(input: BufferedInputStream): HTTPResponse = {
+    new HTTPResponse(input)
   }
     
   private val urlPattern = """(?:http://)?([^/]+)/?(.*)""".r
@@ -18,7 +18,7 @@ object HTTP extends NetPrimitives[HTTPMethod, Response, HTTP] {
 
   override def defaultPort = 80
   
-  def -> (url: String): Response = {
+  def -> (url: String): HTTPResponse = {
     url match {
       case urlPattern(domain, path) => domain match { case domainPort(dom, p) => HTTP.req(GET(domain, path), domain, p.toInt)
                                                       case _ => HTTP.req(GET(domain, path), domain, defaultPort)
@@ -33,15 +33,15 @@ object HTTP extends NetPrimitives[HTTPMethod, Response, HTTP] {
   
 }
 
-class HTTP(host: String, s: Socket) extends Protocol[HTTPMethod, Response] {
+class HTTP(host: String, s: Socket) extends Protocol[HTTPMethod, HTTPResponse] {
   
-  def get: Response = {
+  def get: HTTPResponse = {
     get("/")
   }
-  def get(path: String): Response = {
+  def get(path: String): HTTPResponse = {
     send(GET(host, path))
   }
-  def send(m: HTTPMethod): Response = {
+  def send(m: HTTPMethod): HTTPResponse = {
     HTTP.sendAndFlush(s, HTTP.buildReq(m))
   }
   

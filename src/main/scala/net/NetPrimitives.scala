@@ -16,7 +16,7 @@ trait NetPrimitives[Command, Response, Prot <: Protocol[Command, Response]] {
 
   def buildReq(pkg: Command): String
 
-  def buildResp(stringList: List[String]): Response
+  def buildResp(input: BufferedInputStream): Response
   
   protected def getProtocol(host: String, s: Socket): Prot
 
@@ -25,9 +25,9 @@ trait NetPrimitives[Command, Response, Prot <: Protocol[Command, Response]] {
 	     prot send pkg 
     })
   }
-  protected def doReq(pkg: Command, in: BufferedReader, out: PrintWriter): Response = {
-	 out write buildReq(pkg)
-     buildResp(readInput(in))
+  protected def doReq(pkg: Command, in: BufferedInputStream, out: PrintWriter): Response = {
+    out write buildReq(pkg)
+    buildResp(in)
   }
 
   protected def defaultPort: Int
@@ -46,11 +46,11 @@ trait NetPrimitives[Command, Response, Prot <: Protocol[Command, Response]] {
   
   def sendAndFlush(s: Socket, message: String): Response = {
     val out = new PrintWriter(new BufferedOutputStream(s.getOutputStream), true)
-    val in =  new BufferedReader(new InputStreamReader(s.getInputStream))
+    val in =  new BufferedInputStream(s.getInputStream)
       println(message)
       out write message
       out flush()
-      buildResp(readInput(in))
+      buildResp(in)
   }
 
    private def readInput(in: BufferedReader): List[String] = {

@@ -8,5 +8,7 @@
 HTTP: 
 * Skjule POST/PUT/DELETE fra klient kode.
 * Lage tilsvarende start metode uten port.
-* Finne ut hvorfor connection keepalive gaar treigt.
 * Bedre navngivning.
+* start should return Unit
+* read input for content length is not safe
+* move getLine to a trait (or possibly implicit wrapper for InputStream)
