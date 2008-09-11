@@ -9,9 +9,10 @@ object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
 
   def buildResp(stringList: List[String]): Nothing = error("not implemented")
   
-  protected def getProtocol(s: Socket): FTP = new FTP(s)
+  protected def getProtocol(host: String, s: Socket): FTP = new FTP(host, s)
   
-  
+  def defaultPort = 21
+
   val replyPattern = """(\d+) (.*)""".r
   
   def req(m: FTPMethod) : FTPResponse = {
@@ -50,7 +51,7 @@ object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
   
 }
 
-class FTP(s: Socket) extends Protocol[FTPMethod, FTPResponse](s) {
+class FTP(host: String, s: Socket) extends Protocol[FTPMethod, FTPResponse](host, s) {
   
   val replyPattern = """(\d+) (.*)""".r
   

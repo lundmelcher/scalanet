@@ -10,12 +10,12 @@ define 'scalanet' do
   project.version = '1.0-SNAPSHOT'
   compile.with 'org.scala-lang:scala-library:jar:2.7.1'
   compile.with 'junit:junit:jar:4.4'
-
+  compile.with 'org.specs:specs:jar:1.3.1'
+  
   package :jar, :id => 'scalanet'
 
   test.include 'net.*'
   test.include 'net.http.*'
-
   
 end
 
