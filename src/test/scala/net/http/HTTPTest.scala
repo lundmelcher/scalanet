@@ -6,8 +6,8 @@ class HTTPTest extends Suite {
 
   def testGet {
     val url = "index.php"
-    HTTP.start("www.knowit.no", http => {
-      http.get("index.html")
+    HTTP start("www.knowit.no", http => {
+      http.get
       http.get(url)
       http.get("knowit/Jobb")
     })

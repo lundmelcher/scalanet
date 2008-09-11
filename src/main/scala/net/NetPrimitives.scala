@@ -19,7 +19,7 @@ trait NetPrimitives[Command, Response, Prot <: Protocol[Command, Response]] {
   def buildResp(stringList: List[String]): Response
   
   protected def getProtocol(host: String, s: Socket): Prot
-  
+
   final def req(pkg: Command, host: String, port: Int): Response = {
     start(host, port, prot => {
 	     prot send pkg 
