@@ -10,31 +10,29 @@ package net
 import java.net._
 import java.io._
 
-trait NetPrimitives[P, R, Prot <: Protocol[P, R]] {
+trait NetPrimitives[Command, Response, Prot <: Protocol[Command, Response]] {
   
-  def -> (url: String): R
+  def -> (url: String): Response
 
-  def buildReq(pkg: P): String
+  def buildReq(pkg: Command): String
 
-  def buildResp(stringList: List[String]): R
+  def buildResp(stringList: List[String]): Response
   
   protected def getProtocol(s: Socket): Prot
   
-  final def req(pkg: P, host: String, port: Int): R = {
+  final def req(pkg: Command, host: String, port: Int): Response = {
     start(host, port, prot => {
 	     prot send pkg 
     })
   }
-  protected def doReq(pkg: P, in: BufferedReader, out: PrintWriter): R = {
+  protected def doReq(pkg: Command, in: BufferedReader, out: PrintWriter): Response = {
 	 out write buildReq(pkg)
      buildResp(readInput(in))
   }
   
-  def start(host: String, port: Int, handler: Prot => R) = {
+  def start(host: String, port: Int, handler: Prot => Response) = {
         val s = new Socket(host, port)
    	  try {
-   	    val out = s.getOutputStream
-        val in = s.getInputStream
 	    handler(getProtocol(s))
 	  }
 	  finally {
@@ -42,7 +40,7 @@ trait NetPrimitives[P, R, Prot <: Protocol[P, R]] {
 	  }
   }
   
-  def sendAndFlush(s: Socket, message: String): R = {
+  def sendAndFlush(s: Socket, message: String): Response = {
     val out = new PrintWriter(new BufferedOutputStream(s.getOutputStream), true)
     val in =  new BufferedReader(new InputStreamReader(s.getInputStream))
       println(message)
@@ -60,8 +58,8 @@ trait NetPrimitives[P, R, Prot <: Protocol[P, R]] {
    
 }
 
-abstract class Protocol[P, R](s: Socket) {
+abstract class Protocol[Command, Response](s: Socket) {
   
-  def send(p: P): R
+  def send(p: Command): Response
   
 }
