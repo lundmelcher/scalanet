@@ -11,4 +11,4 @@ HTTP:
 * Bedre navngivning.
 * start should return Unit
 * read input for content length is not safe
-* move getLine to a trait (or possibly implicit wrapper for InputStream)
+
