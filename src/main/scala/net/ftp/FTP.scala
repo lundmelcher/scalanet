@@ -3,6 +3,9 @@ package net.ftp
 import java.net._
 import java.io._
 
+import scala.actors._
+import scala.actors.Actor._
+
 object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
 
   def buildReq(pkg: FTPMethod): Nothing = error("not implemented")
@@ -13,30 +16,10 @@ object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
   
   def defaultPort = 21
 
-  val replyPattern = """(\d+) (.*)""".r
-  
   def req(m: FTPMethod) : FTPResponse = {
-    val cmdSocket = new Socket(m.host, m.port)
-    val cmdOut = new PrintWriter(new OutputStreamWriter(cmdSocket.getOutputStream))
-    val cmdIn = new BufferedReader(new InputStreamReader(cmdSocket.getInputStream))
-    
-    execute("USER anonymous", 331, cmdOut, cmdIn)
-    execute("PASS fredriv@ifi.uio.no", 230, cmdOut, cmdIn)
-    execute("PWD", 257, cmdOut, cmdIn)
-    null
+    error("Not implemented")
   }
 
-  def execute(cmd: String, expected: Int, out: Writer, in: BufferedReader) : Option[String] = {
-    out write cmd
-    in.readLine match {
-      case replyPattern(code, msg) => {
-        println(code + " " + msg)
-        if (expected == code.toInt) Some(msg) else None
-      }	
-      case _ => None
-    }
-  }
-  
   private val urlPattern = """(?:ftp://)?([^/]+)/?(.*)""".r
   private val hostPort = """([^:]+):(\d*)""".r
 
@@ -56,6 +39,7 @@ object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
       val ftp = new FTP(host, s)
       ftp.login(username, password)
       handler(ftp)
+      ftp.quit
     } finally {
       s close
     }
@@ -64,23 +48,38 @@ object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
 
 class FTP(host: String, s: Socket) extends Protocol[FTPMethod, FTPResponse] {
   
+  def SERVICE_READY = 220
+  def SERVICE_CLOSING = 221
+  def FILE_TRANSFER_COMPLETE = 226
+  def ENTERING_PASSIVE_MODE = 227
+  
+  def USER_LOGGED_IN = 230
+  def USER_OK_NEED_PWD = 331
+  
+  def FILE_TRANSFER_STARTING = 150
+  def PATHNAME = 257
+  
   val replyPattern = """(\d+) (.*)""".r
   val hostPortPattern = """.*\((\d+),(\d+),(\d+),(\d+),(\d+),(\d+)\).*""".r
   
   val in = new BufferedReader(new InputStreamReader(s.getInputStream))
   val out = new PrintWriter(new OutputStreamWriter(s.getOutputStream))
 
-  expect(220)
+  expect(SERVICE_READY)
   
   def login(username: String, password: String) {
-    sendExpect("USER " + username, 331)
-    sendExpect("PASS " + password, 230)
+    sendExpect("USER " + username, USER_OK_NEED_PWD)
+    sendExpect("PASS " + password, USER_LOGGED_IN)
+  }
+  
+  def quit() {
+    sendExpect("QUIT", SERVICE_CLOSING)
   }
   
   def getCurrentDirectory() : String = {
     val pathPattern = """\"([^\"]*)\".*""".r
 
-    val msg = sendExpect("PWD", 257)
+    val msg = sendExpect("PWD", PATHNAME)
     msg match {
       case pathPattern(path) => path
       case _ => error("Wrong path format")
@@ -88,41 +87,29 @@ class FTP(host: String, s: Socket) extends Protocol[FTPMethod, FTPResponse] {
   }
   
   def get(path: String) : String = {
-    sendExpect("PASV", 227) match {
+    get(path, self)
+    expect(FILE_TRANSFER_COMPLETE) // Transfer complete
+    self.receive {
+      case content: String => content
+    }
+  }
+  
+  def get(path: String, resultHandler: Actor) {
+    sendExpect("PASV", ENTERING_PASSIVE_MODE) match {
       case hostPortPattern(h1, h2, h3, h4, p1, p2) => {
         val host = h1 + "." + h2 + "." + h3 + "." + h4
         val port = Integer.parseInt(p1) * 256 + Integer.parseInt(p2)
-        send("RETR " + path)
-        val resp = retrieve(host, port)
-        expect(150) // Connection opened
-        expect(226) // Transfer complete
-        resp
+        
+        val worker = new FTPWorker
+        worker.start
+        worker ! (host, port, resultHandler) 
+        
+        sendExpect("RETR " + path, FILE_TRANSFER_STARTING) // Connection opened
       }
       case _ => error("Unexpected response")
     }
   }
-  
-  def retrieve(host: String, port: Int) : String = {
-    println("Retrieving data from " + host + ":" + port)
-    
-    val s = new Socket(host, port)
-    try {
-      val in = new BufferedReader(new InputStreamReader(s.getInputStream))
-      val sb = new StringBuffer
-    
-      var line = in.readLine
-      while (line != null) {
-        println("retrieved: " + line)
-        sb.append(line + "\n")
-        line = in.readLine
-      }
-      println("retrieve finished")
-      sb.toString
-    } finally {
-      s close
-    }
-  }
-  
+
   def sendExpect(msg: String, code: Int) : String = {
     send(msg)
     expect(code)
@@ -139,7 +126,9 @@ class FTP(host: String, s: Socket) extends Protocol[FTPMethod, FTPResponse] {
     println("<- " + resp)
     resp match {
       case replyPattern(code, msg) => {
-        if (Integer.parseInt(code) == expected) msg else error("Unexpected response")
+        if (code.toInt == expected) msg
+        else if (code.toInt == FILE_TRANSFER_COMPLETE) expect(expected)
+        else error("Unexpected response")
       }
       case _ => expect(expected)
     }
@@ -148,4 +137,35 @@ class FTP(host: String, s: Socket) extends Protocol[FTPMethod, FTPResponse] {
   def send(p: FTPMethod): Nothing = {
     error("Not implemented")
   }
+}
+
+class FTPWorker extends Actor {
+  
+  def act() {
+    receive {
+      case (host: String, port: Int, controller: Actor) => controller ! retrieve(host, port)
+      case msg => error("Unhandled message: " + msg)
+    }
+  }
+
+  def retrieve(host: String, port: Int) : String = {
+    println("Retrieving data from " + host + ":" + port)
+    
+    val s = new Socket(host, port)
+    try {
+      val in = new BufferedReader(new InputStreamReader(s.getInputStream))
+      val sb = new StringBuffer
+    
+      var line = in.readLine
+      while (line != null) {
+        sb.append(line + "\n")
+        line = in.readLine
+      }
+      println("retrieve finished")
+      sb.toString
+    } finally {
+      s close
+    }
+  }
+  
 }
