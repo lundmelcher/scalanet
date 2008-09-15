@@ -2,8 +2,8 @@ package net.ftp
 
 abstract class FTPMethod(val host: String, val port: Int, path: String) extends NetPackage {
   
-  
 }
+
 object FTPMethod extends NetPackage {
 
 }

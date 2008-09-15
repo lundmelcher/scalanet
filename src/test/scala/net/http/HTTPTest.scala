@@ -1,8 +1,8 @@
 package net.http
 
-import org.scalatest.Suite
+import org.scalatest.junit.JUnit3Suite
 
-class HTTPTest extends Suite {
+class HTTPTest extends JUnit3Suite {
 
   def testGet {
     val url = "index.php"
