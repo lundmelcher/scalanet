@@ -1,9 +1,12 @@
 package net;
 
-import org.scalatest.FunSuite
+import org.scalatest.junit.JUnit3Suite
 
-class NetTest extends FunSuite {
+class NetTest extends JUnit3Suite {
 
+  def testDummy {
+    true
+  }
 
 /*  test("Rename") {
     import http.{HTTP=>Send,_}
