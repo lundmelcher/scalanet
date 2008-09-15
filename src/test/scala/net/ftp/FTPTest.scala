@@ -1,8 +1,8 @@
 package net.ftp
 
-import org.scalatest.Suite
+import org.scalatest.junit.JUnit3Suite
 
-class FTPTest extends Suite {
+class FTPTest extends JUnit3Suite {
 
   def testCurrentDir {
     FTP.start("ftp.ifi.uio.no", "anonymous", "fredriv@ifi.uio.no", ftp => {
