@@ -6,7 +6,7 @@ import java.io._
 import scala.actors._
 import scala.actors.Actor._
 
-object FTP extends NetPrimitives[FTPMethod, FTPResponse, FTP] {
+object FTP extends SocketHandling[FTPMethod, FTPResponse, FTP] {
 
   def buildReq(pkg: FTPMethod): Nothing = error("not implemented")
 

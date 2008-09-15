@@ -1,6 +1,6 @@
 package net.http
 
-abstract class HTTPMethod private[net](private val host: String, private val p: String) extends NetPackage {
+abstract class HTTPMethod private[net](private val host: String, private val p: String) {
 
   private val pathRegex = """/?(.*)""".r
   
@@ -19,7 +19,7 @@ abstract class HTTPMethod private[net](private val host: String, private val p: 
                              .replaceFirst("<host>", host)
                              .replaceFirst("<path>", path)
   }
-  
+ 
 }
 
 class GET(path: String, host: String) extends HTTPMethod(path, host) {

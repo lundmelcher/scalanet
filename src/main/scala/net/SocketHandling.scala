@@ -10,7 +10,7 @@ package net
 import java.net._
 import java.io._
 
-trait NetPrimitives[Command, Response, Prot <: Protocol[Command, Response]] {
+trait SocketHandling[Command, Response, Prot <: Protocol[Command, Response]] {
   
   def -> (url: String): Response
 

@@ -1,10 +1,10 @@
 package net.ftp
 
-abstract class FTPMethod(val host: String, val port: Int, path: String) extends NetPackage {
+abstract class FTPMethod(val host: String, val port: Int, path: String) {
   
 }
 
-object FTPMethod extends NetPackage {
+object FTPMethod {
 
 }
 

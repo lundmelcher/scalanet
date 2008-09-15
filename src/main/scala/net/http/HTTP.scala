@@ -3,7 +3,7 @@ package net.http
 import java.net._
 import java.io._
 
-object HTTP extends NetPrimitives[HTTPMethod, HTTPResponse, HTTP] {
+object HTTP extends SocketHandling[HTTPMethod, HTTPResponse, HTTP] {
   
   def buildReq(x: HTTPMethod): String = {
     x toString
