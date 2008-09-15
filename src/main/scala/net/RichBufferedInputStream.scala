@@ -23,9 +23,12 @@ class RichBufferedInputStream(val self: BufferedInputStream) extends Proxy {
 
     s.toString
   }
+
 }
-
-
-trait ReadLine {
+object RichBufferedInputStream {
   implicit def bufferedInputStream2richBufferedInputStream(b: BufferedInputStream) = new RichBufferedInputStream(b)
 }
+
+
+
+

@@ -2,10 +2,10 @@ package net.http
 
 import java.io._
 import net.io._
+import net.io.RichBufferedInputStream.bufferedInputStream2richBufferedInputStream
 
 
-
-class HTTPResponse private[net](input: BufferedInputStream) extends ListToString with NetResponse with ReadLine{
+class HTTPResponse private[net](input: BufferedInputStream) extends ListToString with NetResponse{
   val (header, body)  = parseInput
   val stringList = header.stringList ::: body.stringList
    
@@ -21,7 +21,7 @@ class HTTPResponse private[net](input: BufferedInputStream) extends ListToString
     }
   }
   
-  def readBody(contentLength: Int): Body ={
+  private def readBody(contentLength: Int): Body ={
     val bytes = new Array[Byte](contentLength)
     var len = 0
     while(len < contentLength){
