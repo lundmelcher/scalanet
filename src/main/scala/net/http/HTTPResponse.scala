@@ -1,44 +1,25 @@
 package net.http
 
 import java.io._
+import net.io._
 
-class HTTPResponse private[net](input: BufferedInputStream) extends ListToString with NetResponse{
+
+
+class HTTPResponse private[net](input: BufferedInputStream) extends ListToString with NetResponse with ReadLine{
   val (header, body)  = parseInput
   val stringList = header.stringList ::: body.stringList
-
-  private def getLine(): String = {
-    val s = new StringBuilder
-    
-    var found = false
-    while(!found){
-      val c = input.read.toChar
-      if(c == '\n'){
-	found=true
-      }else {
-	s.append(c)
-      }
-    }
-
-    val i = s.indexOf("\r")
-    if(i > -1){
-      s.deleteCharAt(i)
-    }
-
-    s.toString
-  }
-  
+   
   private def parseInput: (Header,Body) = {
     parseInput(new Header(Nil))
   }
 
   private def parseInput(header: Header): (Header, Body) = {
-    getLine() match {
+    input readLine match {
       case null => error("Something went wrong")
       case "" => (header, readBody(header.contentLength))
       case s: String => parseInput(new Header(s :: header.stringList))
     }
   }
-  
   
   def readBody(contentLength: Int): Body ={
     val bytes = new Array[Byte](contentLength)
@@ -107,3 +88,4 @@ class HTTPResponse private[net](input: BufferedInputStream) extends ListToString
   }
   
 }
+
