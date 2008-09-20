@@ -35,7 +35,7 @@ object HTTP extends SocketHandling[HTTPMethod, HTTPResponse, HTTP] {
 
 class HTTP(host: String, s: Socket) extends Protocol[HTTPMethod, HTTPResponse] {
   
-  def get: HTTPResponse = {
+  def get(): HTTPResponse = {
     get("/")
   }
   def get(path: String): HTTPResponse = {

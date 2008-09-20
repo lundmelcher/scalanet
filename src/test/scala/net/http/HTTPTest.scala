@@ -5,14 +5,12 @@ import org.scalatest.junit.JUnit3Suite
 class HTTPTest extends JUnit3Suite {
 
   def testGet {
-    val url = "index.php"
-    HTTP start("www.vg.com", http => {
-      http.get
-      http.get("404")
-      http.get(url)
-    
+    val url = "/index.html"
+    HTTP start("www.vg.no", http => {
+      http get;
+      http get "404"
+      http get url
     })
-    
   }
   
   def testSimpleGet {

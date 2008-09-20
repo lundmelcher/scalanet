@@ -32,9 +32,9 @@ trait SocketHandling[Command, Response, Prot <: Protocol[Command, Response]] {
 
   protected def defaultPort: Int
   
-  def start(host: String, handler: Prot => Response): Response = start(host, defaultPort, handler)
+  def start[T](host: String, handler: Prot => T): T = start(host, defaultPort, handler)
   
-  def start(host: String, port: Int, handler: Prot => Response) = {
+  def start[T](host: String, port: Int, handler: Prot => T) = {
         val s = new Socket(host, port)
    	  try {
 	    handler(getProtocol(host, s))
@@ -47,7 +47,6 @@ trait SocketHandling[Command, Response, Prot <: Protocol[Command, Response]] {
   def sendAndFlush(s: Socket, message: String): Response = {
     val out = new PrintWriter(new BufferedOutputStream(s.getOutputStream), true)
     val in =  new BufferedInputStream(s.getInputStream)
-      println(message)
       out write message
       out flush()
       buildResp(in)
