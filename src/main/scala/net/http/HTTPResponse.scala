@@ -1,70 +1,47 @@
 package net.http
 
 import java.io._
-import net.io._
 import net.io.RichBufferedInputStream.bufferedInputStream2richBufferedInputStream
+import org.apache.commons.httpclient._
 
-
-class HTTPResponse private[net](input: BufferedInputStream) extends ListToString with NetResponse{
-  val (header, body)  = parseInput
-  val stringList = header.stringList ::: body.stringList
-   
-  private def parseInput: (Header,Body) = {
-    parseInput(new Header(Nil))
-  }
-
-  private def parseInput(header: Header): (Header, Body) = {
-    input readLine match {
-      case null => error("Something went wrong")
-      case "" => (header, readBody(header.contentLength))
-      case s: String => parseInput(new Header(s :: header.stringList))
-    }
+class HTTPResponse private[net](headerList: List[Header], bodyArr: Array[Byte]) {
+    
+  val body = new Body(bodyArr)
+  val header = new InternalHeader(headerList)
+  
+  override def toString = header.stringList.mkString("\n") + "\n\n"+ body.toString
+  
+  class Body(body: Array[Byte]) {
+    override def toString = new String(body)
   }
   
-  private def readBody(contentLength: Int): Body ={
-    val bytes = new Array[Byte](contentLength)
-    var len = 0
-    while(len < contentLength){
-      len += input.read(bytes,len,contentLength-len)
-    }
-
-    if(len != contentLength){
-      error("Not implemented")
-    }
+  class InternalHeader(headerList: List[Header]) extends ListToString {
     
-    val body = new String(bytes).split("\n").toList
+    private val tupleList = sMap(headerList)
+    val stringList = tupleList.map(str => (str._1 + ": " + str._2))
     
-    new Body(body)
-  }
-
-  def getBody: Body = new Body(parse()_2)
-  
-  def getHead: Header = new Header(parse()_1)
-  
-  private def parse() = {
-    var isHeader = true
-    stringList.partition((line) => {
-      if(isHeader && !line.trim.isEmpty) {
-        true 
-        }
-      else if(isHeader && line.trim.isEmpty) { isHeader = false; true } else false;
-      })
-  }
-    
-  class Body(val stringList: List[String]) extends ListToString with NetBody {
-  }
-  
-  class Header(val stringList: List[String]) extends ListToString with NetHeader {
-    
-    private val keyValueRegex = """([^:]+):\s*(.+)""".r
-    
-    private val internalMap = setupMap(sMap(stringList).reverse)
+    private val internalMap = setupMap(tupleList)
       
-    private def sMap(remaining: List[String]): List[(String, String)] = remaining match {
-      case keyValueRegex(key, value) :: remain => (key, value) :: sMap(remain)
-      case head :: remain => sMap(remain)
+    private def sMap(remaining: List[Header]): List[(String, String)] = remaining match {
+      case head :: remain => (head.getName, head.getValue) :: parseElements(head.getName, head.getElements) ::: sMap(remain)
       case Nil => Nil
     }
+    
+    
+    private def parseElements(name: String, elements: Array[HeaderElement]): List[(String, String)] = {
+      if(elements == null) {
+        Nil
+      }
+      else {
+        elements.toList match {
+          case head :: remain =>  {
+            if(head.getValue == null) Nil else (name, head.getValue) :: parseElements(name, remain.toArray)
+          }
+          case Nil => Nil
+        }
+      }
+    }
+    
 
     def contentLength = getValue("Content-Length") match {
       case Some(l) => l.head.toInt

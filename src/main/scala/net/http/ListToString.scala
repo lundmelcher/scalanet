@@ -2,7 +2,7 @@ package net.http
 
 trait ListToString {
 
-  val stringList: List[String]
+  protected val stringList: List[String]
   
   override def toString = stringIfy(stringList)
   

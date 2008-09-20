@@ -6,7 +6,7 @@ class HTTPTest extends JUnit3Suite {
 
   def testGet {
     val url = "/index.html"
-    HTTP start("www.vg.no", http => {
+    HTTP start("www.google.no", http => {
       http get;
       http get "404"
       http get url
