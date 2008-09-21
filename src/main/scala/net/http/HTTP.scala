@@ -26,7 +26,7 @@ object HTTP {
   private val urlPattern = """(?:http://)?([^/]+)/?(.*)""".r
   private val domainPort = """([^:]+):(\d*)""".r
 
-  def defaultPort = 80
+  val defaultPort = 80
   
   def -> (url: String): HTTPResponse = {
     url match {
@@ -37,6 +37,15 @@ object HTTP {
     }
   }
   
+  def get(host: String, port: Int, path: String) = start(host, port, _ get path)
+  
+  def head(host: String, port: Int, path: String) = start(host, port, _ head path)
+
+  def options(host: String, port: Int, path: String) = start(host, port, _ options path)
+
+  def delete(host: String, port: Int, path: String) = start(host, port, _ delete path)
+
+  def trace(host: String, port: Int, path: String) = start(host, port, _ trace path)
   
 }
 
@@ -57,23 +66,23 @@ class HTTP(client: HttpClient) {
   
   def get: HTTPResponse = get("")
   
-  def get(path: String): HTTPResponse =  execute(new methods.GetMethod, path)
+  def get(path: String) =  execute(new methods.GetMethod, path)
   
   def head: HTTPResponse = head("") 
 
-  def head(path: String): HTTPResponse = execute(new methods.HeadMethod, path)
+  def head(path: String) = execute(new methods.HeadMethod, path)
 
   def options: HTTPResponse = options("") 
 
-  def options(path: String): HTTPResponse = execute(new methods.OptionsMethod, path)
+  def options(path: String) = execute(new methods.OptionsMethod, path)
 
   def delete: HTTPResponse = options("") 
 
-  def delete(path: String): HTTPResponse = execute(new methods.DeleteMethod, path)
+  def delete(path: String) = execute(new methods.DeleteMethod, path)
 
   def trace: HTTPResponse = trace("") 
 
-  def trace(path: String): HTTPResponse = execute(new methods.TraceMethod(""), path)
+  def trace(path: String) = execute(new methods.TraceMethod(""), path)
   
 }
 

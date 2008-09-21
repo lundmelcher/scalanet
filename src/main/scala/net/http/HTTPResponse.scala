@@ -1,7 +1,5 @@
 package net.http
 
-import java.io._
-import net.io.RichBufferedInputStream.bufferedInputStream2richBufferedInputStream
 import org.apache.commons.httpclient._
 
 class HTTPResponse private[http](responseCode: Int, headerList: List[Header], bodyArr: Array[Byte]) {
@@ -41,14 +39,7 @@ class HTTPResponse private[http](responseCode: Int, headerList: List[Header], bo
         }
       }
     }
-    
-
-    def contentLength = getValue("Content-Length") match {
-      case Some(l) => l.head.toInt
-      case None => error("bork")
-    }
-   
-    
+      
   private def setupMap(remaining: List[(String, String)]): Map[String, List[String]] = {
     //val m = collection.mutable.Map.empty[String,List[String]] 
     var m = Map.empty[String, List[String]]
