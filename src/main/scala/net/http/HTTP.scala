@@ -44,23 +44,35 @@ class HTTP(client: HttpClient) {
   
   private val pathRegex = """/?(.*)""".r
   
-  private def path(p: String) = p match {
+  private def resolvePath(p: String) = p match {
     case pathRegex(actual) => "/" + actual
     case null => "/"
   }
   
-  def get: HTTPResponse = {
-    get("")
-  }
+  private def execute(method: HttpMethod) = {
+    client.executeMethod(method)
+    new HTTPResponse(method.getResponseHeaders().toList, method.getResponseBody())
+  } 
   
-  def get(path: String): HTTPResponse = {
-    val get = new methods.GetMethod("/")
-    client.executeMethod(get)
-    val headers = get.getResponseHeaders().toList
-    var body = get.getResponseBody()
-    new HTTPResponse(headers, body)
-  }
+  def get: HTTPResponse = get("")
+  
+  def get(path: String): HTTPResponse =  execute(new methods.GetMethod(resolvePath(path)))
+  
+  def head: HTTPResponse = head("") 
 
+  def head(path: String): HTTPResponse = execute(new methods.HeadMethod(resolvePath(path)))
+
+  def options: HTTPResponse = options("") 
+
+  def options(path: String): HTTPResponse = execute(new methods.OptionsMethod(resolvePath(path)))
+
+  def delete: HTTPResponse = options("") 
+
+  def delete(path: String): HTTPResponse = execute(new methods.DeleteMethod(resolvePath(path)))
+
+  def trace: HTTPResponse = trace("") 
+
+  def trace(path: String): HTTPResponse = execute(new methods.TraceMethod(resolvePath(path)))
   
 }
 
