@@ -3,16 +3,15 @@
 repositories.remote << 'http://scala-tools.org/repo-releases'
 repositories.remote << 'http://www.ibiblio.org/maven2/'
 
-
 desc 'scalanet'
 define 'scalanet' do
   project.group = 'com.mycompany.app'
   project.version = '1.0-SNAPSHOT'
   compile.with 'org.scala-lang:scala-library:jar:2.7.1'
+  compile.with 'commons-httpclient:commons-httpclient:jar:3.1'
   compile.with 'junit:junit:jar:4.4'
   test.compile.with 'org.specs:specs:jar:1.3.1'
   test.with 'org.specs:specs:jar:1.3.1'
-
 
   package :jar, :id => 'scalanet'
 
