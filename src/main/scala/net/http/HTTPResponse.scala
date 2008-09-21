@@ -4,10 +4,10 @@ import java.io._
 import net.io.RichBufferedInputStream.bufferedInputStream2richBufferedInputStream
 import org.apache.commons.httpclient._
 
-class HTTPResponse private[net](headerList: List[Header], bodyArr: Array[Byte]) {
+class HTTPResponse private[http](responseCode: Int, headerList: List[Header], bodyArr: Array[Byte]) {
     
   val body = new Body(bodyArr)
-  val header = new InternalHeader(headerList)
+  val header = new InternalHeader(responseCode, headerList)
   
   override def toString = header.stringList.mkString("\n") + "\n\n"+ body.toString
   
@@ -15,7 +15,7 @@ class HTTPResponse private[net](headerList: List[Header], bodyArr: Array[Byte]) 
     override def toString = new String(body)
   }
   
-  class InternalHeader(headerList: List[Header]) extends ListToString {
+  class InternalHeader(val responseCode: Int, headerList: List[Header]) extends ListToString {
     
     private val tupleList = sMap(headerList)
     val stringList = tupleList.map(str => (str._1 + ": " + str._2))

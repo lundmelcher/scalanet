@@ -48,31 +48,32 @@ class HTTP(client: HttpClient) {
     case pathRegex(actual) => "/" + actual
     case null => "/"
   }
-  
-  private def execute(method: HttpMethod) = {
-    client.executeMethod(method)
-    new HTTPResponse(method.getResponseHeaders().toList, method.getResponseBody())
+
+  private def execute(method: HttpMethod, path: String) = {
+    method.setPath(resolvePath(path))
+    val resCode = client.executeMethod(method)
+    new HTTPResponse(resCode, method.getResponseHeaders().toList, method.getResponseBody())
   } 
   
   def get: HTTPResponse = get("")
   
-  def get(path: String): HTTPResponse =  execute(new methods.GetMethod(resolvePath(path)))
+  def get(path: String): HTTPResponse =  execute(new methods.GetMethod, path)
   
   def head: HTTPResponse = head("") 
 
-  def head(path: String): HTTPResponse = execute(new methods.HeadMethod(resolvePath(path)))
+  def head(path: String): HTTPResponse = execute(new methods.HeadMethod, path)
 
   def options: HTTPResponse = options("") 
 
-  def options(path: String): HTTPResponse = execute(new methods.OptionsMethod(resolvePath(path)))
+  def options(path: String): HTTPResponse = execute(new methods.OptionsMethod, path)
 
   def delete: HTTPResponse = options("") 
 
-  def delete(path: String): HTTPResponse = execute(new methods.DeleteMethod(resolvePath(path)))
+  def delete(path: String): HTTPResponse = execute(new methods.DeleteMethod, path)
 
   def trace: HTTPResponse = trace("") 
 
-  def trace(path: String): HTTPResponse = execute(new methods.TraceMethod(resolvePath(path)))
+  def trace(path: String): HTTPResponse = execute(new methods.TraceMethod(""), path)
   
 }
 
