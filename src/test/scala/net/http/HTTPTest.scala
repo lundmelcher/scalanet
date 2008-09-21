@@ -1,6 +1,6 @@
 package net.http
 
-import org.scalatest.junit.JUnit3Suite
+import org.scalatest.junit._
 
 class HTTPTest extends JUnit3Suite {
 
@@ -10,13 +10,22 @@ class HTTPTest extends JUnit3Suite {
       http get "/index.html"
       http head;
       http trace;
-      println(http options);
+      http options;
     })
   }
   
   def testSimple {
-    val resp = HTTP.trace("www.vg.no", 80, "/search?hl=en&q=scala+lang&btnG=Google+Search&meta=")
-    println(resp)
+    HTTP.trace("www.vg.no", 80, "/search?hl=en&q=scala+lang&btnG=Google+Search&meta=")
   }
+  
+  def testConnectionClose {
+    HTTP.start("www.vg.no", http => {
+      http.headers = Map("Connection" -> "close")
+      val res = http.options;
+      val Some(List(conection)) = res.header.getValue("Connection")
+      assert("close" == conection)
+      println(http.options);
+    })
+    }
   
 }

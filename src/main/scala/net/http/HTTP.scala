@@ -53,6 +53,8 @@ class HTTP(client: HttpClient) {
   
   private val pathRegex = """/?(.*)""".r
   
+  var headers: Map[String, String] = null
+  
   private def resolvePath(p: String) = p match {
     case pathRegex(actual) => "/" + actual
     case null => "/"
@@ -60,9 +62,16 @@ class HTTP(client: HttpClient) {
 
   private def execute(method: HttpMethod, path: String) = {
     method.setPath(resolvePath(path))
+    addHeaders(method)
     val resCode = client.executeMethod(method)
     new HTTPResponse(resCode, method.getResponseHeaders().toList, method.getResponseBody())
   } 
+
+  private def addHeaders(method: HttpMethod): Unit = {
+    if(headers == null) return
+    headers.foreach((tuple) => method.addRequestHeader(new Header(tuple _1, tuple _2)))
+  }
+  
   
   def get: HTTPResponse = get("")
   
