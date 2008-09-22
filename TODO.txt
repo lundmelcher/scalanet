@@ -6,9 +6,6 @@
 
 
 HTTP: 
-* Skjule POST/PUT/DELETE fra klient kode.
-* Lage tilsvarende start metode uten port.
-* Bedre navngivning.
-* start should return Unit
-* read input for content length is not safe
+* Støtte put og post
+* Lage convenience for å bruker, slik at han/hun ikke trenger å sette cookie hele tiden, f.eks. Er det andre convenience ting som kan legges til? Vil gjøre systemet mutable. Men underliggende er liekvel mutable...
 
