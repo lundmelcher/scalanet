@@ -52,7 +52,10 @@ class HTTPResponse private[http](responseCode: Int, headerList: List[Header], bo
       m
     }
       
-    def getValue(key: String) = internalMap.get(key)
+    def getValue(key: String) = internalMap.get(key) match {
+      case Some(l) => l
+      case None => Nil
+    }
   }
   
 }

@@ -22,7 +22,7 @@ class HTTPTest extends JUnit3Suite {
     HTTP.start("www.vg.no", http => {
       http.headers = Map("Connection" -> "close")
       val res = http.options;
-      val Some(List(conection)) = res.header.getValue("Connection")
+      val List(conection) = res.header.getValue("Connection")
       assert("close" == conection)
       println(http.options);
     })
