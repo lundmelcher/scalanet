@@ -6,9 +6,9 @@ import org.apache.commons.httpclient._
 
 trait HTTPHandling {
   
-   def start[T](host: String, handler: HTTP => T): T = start(host, HTTP.defaultPort, handler)
+   def start[T](host: String)(handler: HTTP => T): T = start(host, HTTP.defaultPort)(handler)
   
-   def start[T](host: String, port: Int, handler: HTTP => T) = {
+   def start[T](host: String, port: Int)(handler: HTTP => T) = {
      val config = new HostConfiguration()
      config.setHost(host, port)
      val manager = new MultiThreadedHttpConnectionManager()
@@ -16,13 +16,12 @@ trait HTTPHandling {
      client.setHostConfiguration(config)
      val connection = client.getHttpConnectionManager
      try {
-	    handler(new HTTP(client))
-	  }
-	  finally {
-	    manager.getConnection(config).close()
-	  }
+	  handler(new HTTP(client))
+     }
+     finally {
+       manager.getConnection(config).close()
+     }
   }
-   
 }
 
 object HTTP extends HTTPHandling{
@@ -34,22 +33,22 @@ object HTTP extends HTTPHandling{
   
   def -> (url: String): HTTPResponse = {
     url match {
-      case urlPattern(domain, path) => domain match { case domainPort(dom, p) => start(domain, p.toInt, _.get(path))
-                                                      case _ => start(domain, defaultPort, _.get(path))
+      case urlPattern(domain, path) => domain match { case domainPort(dom, p) => start(domain, p.toInt)(_.get(path))
+                                                      case _ => start(domain, defaultPort)(_.get(path))
                                                     }
       case _ => error("Not a valid url pattern")
     }
   }
   
-  def get(host: String, port: Int, path: String) = start(host, port, _ get path)
+  def get(host: String, port: Int, path: String) = start(host, port)(_ get path)
   
-  def head(host: String, port: Int, path: String) = start(host, port, _ head path)
+  def head(host: String, port: Int, path: String) = start(host, port)(_ head path)
 
-  def options(host: String, port: Int, path: String) = start(host, port, _ options path)
+  def options(host: String, port: Int, path: String) = start(host, port)(_ options path)
 
-  def delete(host: String, port: Int, path: String) = start(host, port, _ delete path)
+  def delete(host: String, port: Int, path: String) = start(host, port)(_ delete path)
 
-  def trace(host: String, port: Int, path: String) = start(host, port, _ trace path)
+  def trace(host: String, port: Int, path: String) = start(host, port)(_ trace path)
   
 }
 
@@ -63,19 +62,16 @@ class HTTP(client: HttpClient) {
     case pathRegex(actual) => "/" + actual
     case null => "/"
   }
-
   private def execute(method: HttpMethod, path: String) = {
     method.setPath(resolvePath(path))
     addHeaders(method)
     val resCode = client.executeMethod(method)
     new HTTPResponse(resCode, method.getResponseHeaders().toList, method.getResponseBody())
   } 
-
   private def addHeaders(method: HttpMethod): Unit = {
     if(headers == null) return
     headers.foreach((tuple) => method.addRequestHeader(new Header(tuple _1, tuple _2)))
   }
-  
   
   def get: HTTPResponse = get("")
   

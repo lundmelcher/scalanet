@@ -4,14 +4,14 @@ import org.scalatest.junit._
 
 class HTTPTest extends JUnit3Suite with HTTPHandling {
 
-  def testStart {
-    start("www.vg.no", http => {
+  def testMixinMethod {
+    start("www.vg.no") {http => 
       http get;
       http get "/index.html"
       http head;
       http trace;
       http options;
-    })
+    }
   }
   
   def testSimple {
@@ -19,7 +19,7 @@ class HTTPTest extends JUnit3Suite with HTTPHandling {
   }
   
   def testConnectionClose {
-    HTTP.start("www.vg.no", http => {
+    HTTP.start("www.vg.no")(http => {
       http.headers = Map("Connection" -> "close")
       val res = http.options;
       val List(conection) = res.header.getValue("Connection")
