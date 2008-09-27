@@ -3,23 +3,24 @@ package net.http
 import java.net._
 import java.io._
 import org.apache.commons.httpclient._
+import org.apache.commons.httpclient.cookie.CookiePolicy
 
 trait HTTPHandling {
   
-   def start[T](host: String)(handler: HTTP => T): T = start(host, HTTP.defaultPort)(handler)
+   def start[T](host: String, config: ConfigOptions.Value*)(handler: HTTP => T): T = start(host, HTTP.defaultPort, config: _*)(handler)
   
-   def start[T](host: String, port: Int)(handler: HTTP => T) = {
-     val config = new HostConfiguration()
-     config.setHost(host, port)
+   def start[T](host: String, port: Int, config: ConfigOptions.Value*)(handler: HTTP => T) = {
+     val hostConfig = new HostConfiguration()
+     hostConfig.setHost(host, port)
      val manager = new MultiThreadedHttpConnectionManager()
      val client = new HttpClient(manager)
-     client.setHostConfiguration(config)
+     client.setHostConfiguration(hostConfig)
      val connection = client.getHttpConnectionManager
      try {
-	  handler(new HTTP(client))
+	handler(new HTTP(client, config: _*))
      }
      finally {
-       manager.getConnection(config).close()
+       manager.getConnection(hostConfig).close()
      }
   }
 }
@@ -52,11 +53,12 @@ object HTTP extends HTTPHandling{
   
 }
 
-class HTTP(client: HttpClient) {
+class HTTP(client: HttpClient, config: ConfigOptions.Value*) {
   
   private val pathRegex = """/?(.*)""".r
   
-  var headers: Map[String, String] = null
+  var headers: Map[String, String] = Map()
+  
   
   private def resolvePath(p: String) = p match {
     case pathRegex(actual) => "/" + actual
@@ -68,8 +70,11 @@ class HTTP(client: HttpClient) {
     val resCode = client.executeMethod(method)
     new HTTPResponse(resCode, method.getResponseHeaders().toList, method.getResponseBody())
   } 
+
   private def addHeaders(method: HttpMethod): Unit = {
-    if(headers == null) return
+    if (config contains ConfigOptions.DO_NOT_HANDLE_COOKIES) {
+      method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES)
+    }
     headers.foreach((tuple) => method.addRequestHeader(new Header(tuple _1, tuple _2)))
   }
   
