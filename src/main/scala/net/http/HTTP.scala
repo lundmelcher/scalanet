@@ -4,9 +4,9 @@ import java.net._
 import java.io._
 import org.apache.commons.httpclient._
 
-object HTTP {
+trait HTTPHandling {
   
-   def start[T](host: String, handler: HTTP => T): T = start(host, defaultPort, handler)
+   def start[T](host: String, handler: HTTP => T): T = start(host, HTTP.defaultPort, handler)
   
    def start[T](host: String, port: Int, handler: HTTP => T) = {
      val config = new HostConfiguration()
@@ -22,6 +22,10 @@ object HTTP {
 	    manager.getConnection(config).close()
 	  }
   }
+   
+}
+
+object HTTP extends HTTPHandling{
   
   private val urlPattern = """(?:http://)?([^/]+)/?(.*)""".r
   private val domainPort = """([^:]+):(\d*)""".r

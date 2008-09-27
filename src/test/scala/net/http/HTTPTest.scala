@@ -2,10 +2,10 @@ package net.http
 
 import org.scalatest.junit._
 
-class HTTPTest extends JUnit3Suite {
+class HTTPTest extends JUnit3Suite with HTTPHandling {
 
   def testStart {
-    HTTP start("www.vg.no", http => {
+    start("www.vg.no", http => {
       http get;
       http get "/index.html"
       http head;
