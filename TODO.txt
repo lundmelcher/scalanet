@@ -1,11 +1,13 @@
-* Velge unit test rammeverk
-* Unit test poc
+* Unit test - bytte til Ã¥ bruke FunSuite?
 * Public interfaces
-* Rydde opp i tester, foreløpig ingen unit tester, bare tullball.
+* Rydde opp i tester, dÃ¥rlige tester
 ...
 
 
 HTTP: 
-* Støtte put og post
-* Lage convenience for å bruker, slik at han/hun ikke trenger å sette cookie hele tiden, f.eks. Er det andre convenience ting som kan legges til? Vil gjøre systemet mutable. Men underliggende er liekvel mutable...
-
+* StÃ¸tte put og post
+* SÃ¸tte multipart request (binary upload)
+* Mime types i request og response
+* Cookie stÃ¸tte kan nÃ¥ disables. Finnes det andre convenience ting vi trenger i for config
+* Vurdere Ã¥ gjÃ¸re HTTP immutable
+* HTTPS?
