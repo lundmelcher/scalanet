@@ -1,13 +1,5 @@
 package net.ftp
 
-class FTPResponse extends NetResponse {
+class FTPResponse {
 
-  def getBody: NetBody = {
-    null
-  }
-  
-  def getHead: NetHeader = {
-    null
-  }
-  
 }

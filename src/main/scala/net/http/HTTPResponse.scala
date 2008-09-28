@@ -1,30 +1,29 @@
 package net.http
 
-import org.apache.commons.httpclient._
+import org.apache.commons.httpclient.{Header => HttpHeader, _}
 
-class HTTPResponse private[http](responseCode: Int, headerList: List[Header], bodyArr: Array[Byte]) {
+class HTTPResponse private[http](responseCode: Int, headerList: List[HttpHeader], bodyArr: Array[Byte]) {
     
   val body = new Body(bodyArr)
-  val header = new InternalHeader(responseCode, headerList)
+  val header = new Header(responseCode, headerList)
   
   override def toString = header.stringList.mkString("\n") + "\n\n"+ body.toString
   
-  class Body(body: Array[Byte]) {
+  class Body(val body: Array[Byte]) {
     override def toString = new String(body)
   }
   
-  class InternalHeader(val responseCode: Int, headerList: List[Header]) extends ListToString {
+  class Header private[HTTPResponse](val responseCode: Int, headerList: List[HttpHeader]) {
     
-    private val tupleList = sMap(headerList)
-    val stringList = tupleList.map(str => (str._1 + ": " + str._2))
+    private val tupleList = createTupleList(headerList)
+    private[HTTPResponse] val stringList = tupleList.map(str => (str._1 + ": " + str._2))
     
     private val internalMap = setupMap(tupleList)
       
-    private def sMap(remaining: List[Header]): List[(String, String)] = remaining match {
-      case head :: remain => (head.getName, head.getValue) :: parseElements(head.getName, head.getElements) ::: sMap(remain)
+    private def createTupleList(remaining: List[HttpHeader]): List[(String, String)] = remaining match {
+      case head :: remain => (head.getName, head.getValue) :: parseElements(head.getName, head.getElements) ::: createTupleList(remain)
       case Nil => Nil
     }
-    
     
     private def parseElements(name: String, elements: Array[HeaderElement]): List[(String, String)] = {
       if(elements == null) {
@@ -41,7 +40,6 @@ class HTTPResponse private[http](responseCode: Int, headerList: List[Header], bo
     }
       
   private def setupMap(remaining: List[(String, String)]): Map[String, List[String]] = {
-    //val m = collection.mutable.Map.empty[String,List[String]] 
     var m = Map.empty[String, List[String]]
     for ((field, value) <- remaining) {
       m = m.get(field) match {
@@ -56,7 +54,8 @@ class HTTPResponse private[http](responseCode: Int, headerList: List[Header], bo
       case Some(l) => l
       case None => Nil
     }
+    
+    def values = internalMap
   }
-  
 }
 

@@ -1,6 +1,7 @@
 * Unit test - bytte til å bruke FunSuite?
 * Public interfaces
 * Rydde opp i tester, dårlige tester
+* Trekke ut felles funksjonalitet i FTP og HTTP for å generalisere, hvis mulig.
 ...
 
 
@@ -9,5 +10,6 @@ HTTP:
 * Søtte multipart request (binary upload)
 * Mime types i request og response
 * Cookie støtte kan nå disables. Finnes det andre convenience ting vi trenger i for config
-* Vurdere å gjøre HTTP immutable
+* Vurdere å gjøre HTTP immutable - gjort, men har det noen hensikt?
 * HTTPS?
+* Splitte class HTTP i header og body? Lettere for put og post?

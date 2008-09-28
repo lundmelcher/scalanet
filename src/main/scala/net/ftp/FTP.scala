@@ -6,12 +6,8 @@ import java.io._
 import scala.actors._
 import scala.actors.Actor._
 
-object FTP extends SocketHandling[FTPMethod, FTPResponse, FTP] {
+object FTP {
 
-  def buildReq(pkg: FTPMethod): Nothing = error("not implemented")
-
-  def buildResp(input: BufferedInputStream): Nothing = error("not implemented")
-  
   protected def getProtocol(host: String, s: Socket): FTP = new FTP(host, s)
   
   def defaultPort = 21
@@ -46,7 +42,7 @@ object FTP extends SocketHandling[FTPMethod, FTPResponse, FTP] {
   }
 }
 
-class FTP(host: String, s: Socket) extends Protocol[FTPMethod, FTPResponse] {
+class FTP(host: String, s: Socket){
   
   def SERVICE_READY = 220
   def SERVICE_CLOSING = 221
