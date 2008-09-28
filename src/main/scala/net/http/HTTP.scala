@@ -17,7 +17,7 @@ trait HTTPHandling {
      client.setHostConfiguration(hostConfig)
      val connection = client.getHttpConnectionManager
      try {
-	handler(new HTTP(client, config: _*))
+	handler(new HTTP(client, config.toList))
      }
      finally {
        manager.getConnection(hostConfig).close()
@@ -53,17 +53,31 @@ object HTTP extends HTTPHandling{
   
 }
 
-class HTTP(client: HttpClient, config: ConfigOptions.Value*) {
+class HTTP private(client: HttpClient, headers: Map[String, String], config: List[ConfigOptions.Value]) {
   
-  private val pathRegex = """/?(.*)""".r
+  private[http] def this(client: HttpClient, config: List[ConfigOptions.Value]) {
+    this(client, Map[String, String](), config)
+  }
   
-  var headers: Map[String, String] = Map()
+  private val pathRegex = "/?(.*)".r
   
+  def putHeaders(headers: Tuple2[String, String]*): HTTP = {
+    val newMap = createMap(headers.toList)
+    new HTTP(client, newMap, config)  
+  }
+  
+  def createMap(tuples: List[Tuple2[String, String]]): Map[String, String] = {
+    tuples match {
+      case Nil => Map()
+      case (key, value) :: tail => Map(key -> value) ++ createMap(tail)
+    }
+  }
   
   private def resolvePath(p: String) = p match {
     case pathRegex(actual) => "/" + actual
     case null => "/"
   }
+  
   private def execute(method: HttpMethod, path: String) = {
     method.setPath(resolvePath(path))
     addHeaders(method)

@@ -32,11 +32,10 @@ class HTTPTest extends JUnit3Suite with HTTPHandling {
   
   def testConnectionClose {
     HTTP.start("www.vg.no")(http => {
-      http.headers = Map("Connection" -> "close")
-      val res = http.options;
+      val newHttp = http putHeaders ("Connection" -> "close")
+      val res = newHttp.options;
       val List(conection) = res.header.value("Connection")
       assert("close" == conection)
-      println(http.options);
     })
     }
   
