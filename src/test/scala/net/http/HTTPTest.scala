@@ -2,6 +2,7 @@ package net.http
 
 import org.scalatest.junit._
 import ConfigOptions._
+import Implicits._
 
 class HTTPTest extends JUnit3Suite with HTTPHandling {
 

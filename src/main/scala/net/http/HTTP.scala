@@ -4,6 +4,7 @@ import java.net._
 import java.io._
 import org.apache.commons.httpclient._
 import org.apache.commons.httpclient.cookie.CookiePolicy
+import Implicits._
 
 trait HTTPHandling {
   
@@ -41,15 +42,15 @@ object HTTP extends HTTPHandling{
     }
   }
   
-  def get(host: String, port: Int, path: String) = start(host, port)(_ get path)
+  def get(host: String, port: Int, path: Resource) = start(host, port)(_ get path)
   
-  def head(host: String, port: Int, path: String) = start(host, port)(_ head path)
+  def head(host: String, port: Int, path: Resource) = start(host, port)(_ head path)
 
-  def options(host: String, port: Int, path: String) = start(host, port)(_ options path)
+  def options(host: String, port: Int, path: Resource) = start(host, port)(_ options path)
 
-  def delete(host: String, port: Int, path: String) = start(host, port)(_ delete path)
+  def delete(host: String, port: Int, path: Resource) = start(host, port)(_ delete path)
 
-  def trace(host: String, port: Int, path: String) = start(host, port)(_ trace path)
+  def trace(host: String, port: Int, path: Resource) = start(host, port)(_ trace path)
   
 }
 
@@ -78,8 +79,8 @@ class HTTP private(client: HttpClient, headers: Map[String, String], config: Lis
     case null => "/"
   }
   
-  private def execute(method: HttpMethod, path: String) = {
-    method.setPath(resolvePath(path))
+  private def execute(method: HttpMethod, request: Resource) = {
+    method.setPath(resolvePath(request.path))
     addHeaders(method)
     val resCode = client.executeMethod(method)
     new HTTPResponse(resCode, method.getResponseHeaders().toList, method.getResponseBody())
@@ -92,25 +93,16 @@ class HTTP private(client: HttpClient, headers: Map[String, String], config: Lis
     headers.foreach((tuple) => method.addRequestHeader(new Header(tuple _1, tuple _2)))
   }
   
-  def get: HTTPResponse = get("")
+  def get(implicit request: Resource) =  execute(new methods.GetMethod, request)
   
-  def get(path: String) =  execute(new methods.GetMethod, path)
+  def head(implicit request: Resource) = execute(new methods.HeadMethod, request)
+
+  def options(implicit request: Resource) = execute(new methods.OptionsMethod, request)
+
+  def delete(implicit request: Resource) = execute(new methods.DeleteMethod, request)
+
+  def trace(implicit request: Resource) = execute(new methods.TraceMethod(""), request)
   
-  def head: HTTPResponse = head("") 
-
-  def head(path: String) = execute(new methods.HeadMethod, path)
-
-  def options: HTTPResponse = options("") 
-
-  def options(path: String) = execute(new methods.OptionsMethod, path)
-
-  def delete: HTTPResponse = options("") 
-
-  def delete(path: String) = execute(new methods.DeleteMethod, path)
-
-  def trace: HTTPResponse = trace("") 
-
-  def trace(path: String) = execute(new methods.TraceMethod(""), path)
   
 }
 
